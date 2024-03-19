@@ -1,0 +1,184 @@
+/**********************************************************************
+ *  HW4 - Blocky
+ *  PROGRAM ANALYSIS
+ *
+ *  For each method below:
+ *    - List the data structure(s) you used. Provide a brief justification
+ *    - Provide its big-O. Provide a brief justification
+ *  Only answer for 5 methods
+ **********************************************************************/
+
+* random_init (1 pt):
+Data Structures Used:
+Tree (specifically, a Quadtree): The primary data structure used in my randomInit() method is a tree, with a specific focus on a quadtree due to the nature of block.smash(). A quadtree is a tree data structure where each internal node has exactly four children. This structure is implied through the smash() method, which presumably subdivides a block into four child blocks, and through the iteration over block.children(), each block can have multiple children.
+
+Array: The block.children() uses an array data structure to store child blocks of a given block. The iteration over block.children() in the loop proves that children are stored in a way that allows sequential access.
+
+Big-O Runtime Analysis
+The runtime complexity of the randomInit() method is O(4^d), where d is the maximum depth (maxDepth) of the quadtree.
+
+Justification:
+Exponential Growth: At each level of depth, every block has a chance to be smashed into 4 child blocks, leading to exponential growth in the number of blocks as the depth increases. Specifically, at depth 1, there are up to 4 blocks; at depth 2, up to 16 blocks; and so on, resulting in up to 4^d blocks at depth d.
+
+Constant Time Operations: Within the randomInitHelper, operations like checking the current depth, generating a random chance, and setting a color are all constant time operations, i.e., O(1). However, the exponential increase in the number of blocks with depth dominates the runtime.
+
+Recursive Calls: The method makes a recursive call for each child block created by smashing, which compounds the exponential growth factor since each level of recursion operates on a potentially larger set of blocks than the previous level.
+
+
+
+
+
+
+**********************************************************************
+* getBlock (1 pt):
+
+Data Structures Used:
+Queue (ArrayDeque<IBlock>): The primary data structure used in the getBlock() method is a queue, specifically an ArrayDeque. This choice is ideal for implementing a breadth-first search (BFS) algorithm because it efficiently supports adding elements to the end (offer()) and removing elements from the front (poll()), which are essential operations for maintaining the FIFO (first-in-first-out) order required by BFS.
+Justification:
+Queue for BFS: BFS iteratively explores the tree level by level, starting from the root. A queue is used to keep track of which block to visit next. By enqueuing a block's children and dequeuing the next block to process, the algorithm ensures that blocks are visited in the order they're discovered, maintaining a level-wise traversal.
+Big-O Runtime Analysis
+The runtime complexity of the getBlock() method is O(n), where n is the total number of blocks in the quadtree.
+
+Justification:
+BFS Traversal: The method performs a BFS traversal of the quadtree to find a block by its position. BFS visits each block exactly once. Therefore, the runtime complexity is directly proportional to the number of blocks in the quadtree.
+
+Constant Time Queue Operations: Operations on the queue, such as offer() and poll(), are performed in constant time, O(1). Since these operations are executed once for each block in the tree, the overall complexity of the traversal is O(n), where each block is enqueued and dequeued exactly once.
+
+Linear Search: Since the method sequentially checks each block's index against the target position (pos), it essentially performs a linear search over the blocks in BFS order. In the worst-case scenario (where the target block is the last one visited or does not exist), the method will visit all blocks, leading to a linear time complexity.
+
+
+
+
+
+
+**********************************************************************
+* swap (1 pt):
+
+Data Structures Used：
+Tree (specifically, a Quadtree): The swap method operates on a quadtree structure. A quadtree is a hierarchical tree where each node can have up to four children, organized conceptually as top-left, top-right, bottom-left, and bottom-right.
+
+Array: the methods like setTopLeftTree(), setTopRightTree(), etc., suggest that the parent block internally uses an array data structure to manage its children. This is a common practice for efficiently accessing specific child nodes by position.
+
+Justification:
+The use of a quadtree is justified by the need to manage a spatial data structure where each block can be subdivided into four smaller blocks. This is suitable for applications requiring hierarchical spatial partitioning.
+The implied use of arrays for managing children in each block allows for direct access to a specific child based on its spatial position, which is essential for the efficient execution of the swap method.
+Big-O Runtime Analysis:
+The runtime complexity of the swap method is O(1).
+
+Justification:
+Constant Time Operations: The swap method performs a series of operations that each take constant time, regardless of the size of the quadtree. These operations include checking the existence and depth of blocks, accessing and updating parent references, finding positions in parents, and setting children at specific positions.
+No Loops Over Tree Size: There are no loops or recursive calls that depend on the size of the quadtree. All operations are direct actions or checks on specific blocks or their immediate parents/children.
+Fixed Number of Children: Since each block can have a maximum of four children (due to the quadtree structure), operations involving children (like findPositionInParent and setChildAtPosition) are also constant time. The method does not iterate over an arbitrary number of elements that could grow with the quadtree's size.
+
+
+
+
+
+
+
+
+**********************************************************************
+* smash (1 pt):
+Data Structures Used：
+Quadtree: A hierarchical tree where each node has exactly four children (corresponding to the top-left, top-right, bottom-left, and bottom-right quadrants of the parent node). This is told by the subdivision process that creates four child Block instances for each node that is not a leaf and is below the maximum depth.
+
+Array for Colors (COLORS): The method uses an array to store possible colors (COLORS). This structure allows for random access to colors based on indices, which is efficient for selecting a color at random.
+
+Justification
+Quadtree: The quadtree is appropriate for spatial data representation, allowing efficient querying and manipulation of spatial information. By subdividing each block into four, the method efficiently handles spatial data at increasing levels of detail.
+
+Array for Colors: Arrays are ideal for storing a fixed set of elements when random access is required. In this case, the array holds color options, and the method accesses these options randomly, making an array the right choice.
+
+Big-O Runtime Analysis
+The runtime complexity of the smash(int maxDepth) method can be considered O(1) in the context of a single invocation affecting only one block. However, if we consider the potential recursive impact of calling smash on the entire quadtree structure, a more detailed analysis is needed:
+
+Justification
+Single smash Operation: For a single call to smash, where the method subdivides a block into four child blocks and assigns colors, the runtime is constant, as it involves a fixed number of operations (creating four children, assigning colors).
+
+Recursive Subdivision Impact: If we were to consider the impact of recursively calling smash to subdivide blocks down to maxDepth, the complexity would be more complex. However, as described, the method does not inherently include recursive calls to smash; such behavior would depend on external invocations.
+
+Recursive Application: If smash were called recursively on all children in a separate method to ensure the entire tree reaches maxDepth, the complexity would become exponential, specifically O(4^d), where d is the depth of recursion. This is because each smash call potentially generates four new smash calls on its child blocks, leading to exponential growth in the number of operations with increasing depth.
+
+
+
+
+
+
+
+
+**********************************************************************
+* rotate (1 pt):
+Data Structures Used:
+Quadtree: my implementation of the rotate() method and the auxiliary functions manipulate a quadtree structure. This is evident from the way I'm handling topLeftTree, topRightTree, botLeftTree, and botRightTree as child nodes of a block, which is characteristic of quadtrees where each node can have up to four children corresponding to different quadrants of the spatial area it represents.
+
+Point: The Point class is used to represent the coordinates of each block in the quadtree. This is a simple but effective way to manage spatial data, allowing for easy calculation of midpoints and adjustments of child block positions.
+
+Justification
+Quadtree: Quadtrees are an efficient way to represent spatial data, allowing for easy subdivision and manipulation of space. This data structure is particularly well-suited for operations like rotate, as it allows for localized transformations that affect the spatial arrangement of child nodes.
+
+Point: Using a Point class to encapsulate the coordinates simplifies the handling of spatial data, making the calculation of midpoints and the adjustment of positions more intuitive and less error-prone.
+
+Big-O Runtime Analysis:
+The runtime complexity of the rotate() method, along with its auxiliary functions, is O(1) for a single invocation on a block.
+
+Justification:
+Fixed Number of Operations: The rotate() method performs a fixed set of operations that do not vary with the size of the quadtree. Specifically, it swaps references among the block's four children and then adjusts their positions. Even the adjustChildrenPositions() and recursive calls to updateChildBlock() deal with a constant number of children (at most four at any level of recursion), and the depth of recursion would be constant for any single rotate operation on a block because it only goes as deep as the number of levels in that particular subtree, which is fixed for any given call.
+
+No Dependency on Total Number of Nodes: Since the operations are localized to a block and its immediate children (with possible recursive adjustments within its subtree), the time complexity does not scale with the total number of nodes in the quadtree. Each call to rotate() affects only the nodes within a specific block's subtree, and the depth of these operations is bounded by the depth of the subtree, not the entire quadtree.
+
+
+
+
+
+
+
+
+**********************************************************************
+* flatten (1 pt):
+
+Data Structures Used：
+Quadtree: The primary data structure in my implementation is a quadtree. This is evidenced by the recursive subdivision of space represented by each IBlock into four children blocks (topLeft, topRight, bottomLeft, bottomRight), which is characteristic of quadtrees. Quadtrees are used to efficiently represent 2D spatial information, allowing for operations that benefit from the hierarchical subdivision of space, such as fast querying and compact storage of spatial data.
+
+2D Array (IBlock[][] grid): The method uses a two-dimensional array to represent the flattened quadtree. This data structure is suitable for storing grid-based representations of data, where each cell of the array corresponds to a spatial region in the quadtree. The 2D array allows for direct access to any cell based on its coordinates, making it ideal for this flattening process.
+
+List (List<IBlock> children): Within the flattenHelper method, a list is used to store the children of a block. This implies that each block manages its children in a collection that supports ordered access, enabling iteration over the children in a defined sequence (top-left, top-right, bottom-right, bottom-left).
+
+Justification:
+Quadtree: Perfect for spatial data representation, enabling efficient operations like collision detection, area querying, and in this case, transformation into a 2D grid representation.
+2D Array: Provides an intuitive mapping from the hierarchical quadtree structure to a flat, easy-to-index grid format, facilitating operations that require spatial uniformity or direct access.
+List: Facilitates dynamic storage and ordered access to a block's children, essential for recursively traversing the quadtree and applying operations to each child block in sequence.
+
+Big-O Runtime Analysis:
+The runtime complexity of the flatten() method is O(n), where n is the total number of cells in the resulting 2D array.
+
+Justification:
+Complete Tree Coverage: The method ensures every cell in the 2D array is visited exactly once. In the worst case, this means setting a value for each cell when the leaf block size corresponds to the smallest possible block size at the maximum depth of the quadtree. Since the array size is 2^maxDepth by 2^maxDepth, the total number of cells is n = 4^maxDepth.
+
+Linear in Terms of Cells: Although the operation iterates over every cell that a block covers, the combined set of iterations across all recursive calls collectively ensures that each cell in the grid is assigned exactly once. Therefore, the complexity is linear with respect to the total number of cells in the grid, not exponentially related to the depth of the quadtree because each cell's assignment is a constant-time operation.
+
+No Redundant Operations: Each part of the grid is filled based on the leaf blocks of the quadtree, without overlap in work; thus, the total work done corresponds directly to the size of the output grid, not the structure of the quadtree beyond its depth.
+
+
+
+
+
+**********************************************************************
+* perimeter_score (0 pt):
+
+Runtime analysis: perimeter_score
+
+Algorithm:
+
+    We call  flatten() and store the result in a 2D array
+
+    We go through the array and count the number of border cells with the target color.
+
+Analysis:
+
+The number of cells in the array is the number of leaf nodes in the QuadTree; since it is a full 4-ary tree, we get the maximum number of leaf nodes when all the levels in the quadtree are full. Then, the number of leaf nodes is roughly equal to (3 * n)/4, with n representing the total number of nodes in the tree. Hence traversing the 2D array runs in O(n).
+
+Since the method also call flatten(), the perimeter_score methos described above runs in Max{O(flatten) ,O(n)}
+
+
+
+**********************************************************************
